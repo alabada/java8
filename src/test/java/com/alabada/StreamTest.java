@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @Author wenzhd
@@ -48,6 +49,16 @@ public class StreamTest {
         Article article = getFirstJavaArticle1("ddds").orElse(defaultArticle);
 
         Assert.assertEquals("defautAuthor", article.getAuthor());
+    }
+
+    @Test
+    public void testGetListByStream() {
+        List<Article> articleList = articles.stream()
+                .filter(article -> "Java".equals(article.getTitle()))
+                .collect(Collectors.toList());
+
+        Assert.assertEquals(2, articleList.size());
+
     }
 
 }
