@@ -100,4 +100,20 @@ public class StreamTest {
         System.out.println(distinctTags.toString());
     }
 
+    // 分组后为每组做统计，再给一个计数收集器就好了。
+//    Map<String, Long> numEmployeesByCity =
+//            employees.stream().collect(groupingBy(Employee::getCity, counting()));
+
+    // 计算每个城市的平均年龄，这可以联合使用 averagingInt 和 groupingBy 收集器
+//    Map<String, Double> avgSalesByCity =
+//            employees.stream().collect(groupingBy(Employee::getCity,
+//                    averagingInt(Employee::getNumSales)));
+
+    // 找出最优秀的员工，你可以将所有雇员分为两组，一组销售量大于 N，另一组小于 N，使用 partitioningBy 收集器：
+//    Map<Boolean, List<Employee>> partitioned =
+//            employees.stream().collect(partitioningBy(e -> e.getNumSales() > 150));
+
+
+
+
 }
