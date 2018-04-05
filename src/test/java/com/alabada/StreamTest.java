@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -17,21 +18,30 @@ import java.util.stream.Collectors;
 public class StreamTest {
 
     private List<Article> articles = Lists.newArrayList(
-            new Article("C++", "author1", Lists.newArrayList()),
-            new Article("Matlab", "author2", Lists.newArrayList()),
-            new Article("Matlab", "author11", Lists.newArrayList()),
-            new Article("C#", "author3", Lists.newArrayList()),
-            new Article("Java", "author4", Lists.newArrayList()),
-            new Article("Action Script", "author5", Lists.newArrayList()),
-            new Article("Java", "author6", Lists.newArrayList())
+            new Article("C++", "author1", Lists.newArrayList("aaa", "bb")),
+            new Article("Matlab", "author2", Lists.newArrayList("ccc","d")),
+            new Article("Matlab", "author11", Lists.newArrayList("aaa")),
+            new Article("C#", "author3", Lists.newArrayList("bbb")),
+            new Article("Java", "author4", Lists.newArrayList("c")),
+            new Article("Action Script", "author5", Lists.newArrayList("ddd", "d")),
+            new Article("Java", "author6", Lists.newArrayList("ddd"))
     );
 
+    /**
+     * 过滤
+     * @return
+     */
     public Optional<Article> getFirstJavaArticle() {
         return articles.stream()
                 .filter(article -> article.getTags().contains("Java"))
                 .findFirst();
     }
 
+    /**
+     * 查找第一个
+     * @param s
+     * @return
+     */
     public Optional<Article> getFirstJavaArticle1(String s) {
         return articles.stream()
                 .filter(article -> s.equals(article.getTitle()))
@@ -63,6 +73,9 @@ public class StreamTest {
 
     }
 
+    /**
+     * 分组
+     */
     @Test
     public void testGroupingByStream() {
         Map<String, List<Article>> groupArticleMap = articles.stream()
@@ -76,6 +89,15 @@ public class StreamTest {
 
         Assert.assertEquals(1, groupArticleMap.get("C++").size());
         Assert.assertEquals("C++", groupArticleMap.get("C++").get(0).getTitle());
+    }
+
+    @Test
+    public void testGetDistinctTags() {
+        Set<String> distinctTags = articles.stream()
+                .flatMap(article -> article.getTags().stream()) // flatmap把列表转为一个返回流
+                .collect(Collectors.toSet()); // 使用collect去创建一个集合作为返回
+
+        System.out.println(distinctTags.toString());
     }
 
 }
