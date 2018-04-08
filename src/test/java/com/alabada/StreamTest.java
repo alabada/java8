@@ -188,6 +188,10 @@ public class StreamTest {
         System.out.println(distinctVlauesFromLotsOfValue);
     }
 
+    /**
+     * 判断流中是否存在至少一个元素满足指定的条件，条件通过Lambda表达式传递给anyMatch，
+     * 执行结果为Boolean类型
+     */
     @Test
     public void testAnyMatch () {
         Boolean result1 = articles.stream()
@@ -200,6 +204,57 @@ public class StreamTest {
         Assert.assertEquals(true, result1);
         Assert.assertEquals(false, result2);
 
+    }
+
+    /**
+     * allMatch用于判断流中所有元素是否都满足指定条件
+     */
+    @Test
+    public void testAllMatch() {
+        Boolean result = articles.stream()
+                .allMatch(Article::isJava);
+
+        Assert.assertEquals(false, result);
+    }
+
+    @Test
+    public void testNoneMatch() {
+        Boolean result = articles.stream()
+                .noneMatch(Article::isAngular);
+
+        Assert.assertEquals(true, result);
+    }
+
+    @Test
+    public void testFindAny() {
+        Optional<String> any = testList.stream()
+                .findAny();
+
+        Assert.assertNotNull(any);
+        System.out.println(any);
+    }
+
+    @Test
+    public void testFindFirst() {
+        Optional<Article> article = articles.stream()
+                .findFirst();
+
+        Assert.assertNotNull(article);
+        System.out.println(article);
+    }
+
+    private List<Person> persons = Lists.newArrayList(
+            new Person(20, "name1", 78.0, true),
+            new Person(30, "name2", 88.0, false),
+            new Person(40, "name3", 74.0, true),
+            new Person(50, "name4", 75.0, false)
+    );
+
+    @Test
+    public void testReduceForAdd() {
+        int sumAge = persons.stream().reduce(
+                0,
+                (p1, p2) -> p1.getAge()+p2.getAge());
     }
 
 
