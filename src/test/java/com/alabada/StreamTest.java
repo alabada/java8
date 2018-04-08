@@ -4,6 +4,8 @@ import org.assertj.core.util.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 public class StreamTest {
 
     private List<Article> articles = Lists.newArrayList(
-            new Article("C++", "author1", Lists.newArrayList("aaa", "bb")),
+            new Article("C++", "author1", Lists.newArrayList("aaa", "bb", "bb","ccc")),
             new Article("Matlab", "author2", Lists.newArrayList("ccc","d")),
             new Article("Matlab", "author11", Lists.newArrayList("aaa")),
             new Article("C#", "author3", Lists.newArrayList("bbb")),
@@ -100,6 +102,16 @@ public class StreamTest {
         System.out.println(distinctTags.toString());
     }
 
+    @Test
+    public void testGetDistinctTags2() {
+        List<String> distinctTags = articles.stream()
+                .flatMap(article -> article.getTags().stream())
+                .distinct()
+                .collect(Collectors.toList());
+
+        System.out.println(distinctTags);
+    }
+
     // 分组后为每组做统计，再给一个计数收集器就好了。
 //    Map<String, Long> numEmployeesByCity =
 //            employees.stream().collect(groupingBy(Employee::getCity, counting()));
@@ -113,6 +125,82 @@ public class StreamTest {
 //    Map<Boolean, List<Employee>> partitioned =
 //            employees.stream().collect(partitioningBy(e -> e.getNumSales() > 150));
 
+    private List<String> testList = Lists.newArrayList("aa", "bb", "cc", "aaa", "bb", "ccc");
+
+    @Test
+    public void testDistinctFunc() {
+
+        List<String> result = testList.stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        Assert.assertEquals(5, result.size());
+    }
+
+    @Test
+    public void testLimitFunc() {
+        List<String> result = testList.stream()
+                .limit(3)
+                .collect(Collectors.toList());
+
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("aa", result.get(0));
+        Assert.assertEquals("bb", result.get(1));
+        Assert.assertEquals("cc", result.get(2));
+    }
+
+    @Test
+    public void testSkipFunc() {
+        List<String> result = testList.stream()
+                .skip(4)
+                .collect(Collectors.toList());
+
+        Assert.assertEquals(2, result.size());
+        System.out.println(result.toArray()[1]);
+        Assert.assertArrayEquals(new String[]{"bb", "ccc"}, result.toArray());
+    }
+
+    @Test
+    public void testMap() {
+        List<String> result = articles.stream()
+                .map(Article::getTitle)
+                .collect(Collectors.toList());
+
+        Assert.assertNotNull(result);
+        System.out.println(result);
+        Assert.assertEquals(7, result.size());
+    }
+
+    // 小流合并成大流
+    @Test
+    public void testFlatMap() {
+        List<String> bigList = Lists.newArrayList();
+        bigList.add("I am a boy");
+        bigList.add("I love the girl");
+        bigList.add("But the girl loves another girl");
+
+        List<String> distinctVlauesFromLotsOfValue = bigList.stream()
+                .map(lineList -> lineList.split(" ")) // 变成小流
+                .flatMap(Arrays::stream) // 将很多小流合并成大流
+                .distinct() // 去重
+                .collect(Collectors.toList());
+
+        System.out.println(distinctVlauesFromLotsOfValue);
+    }
+
+    @Test
+    public void testAnyMatch () {
+        Boolean result1 = articles.stream()
+                .anyMatch(Article::isJava);
+
+        Boolean result2 = articles.stream()
+                .anyMatch(Article::isAngular);
+
+
+        Assert.assertEquals(true, result1);
+        Assert.assertEquals(false, result2);
+
+    }
 
 
 
