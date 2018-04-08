@@ -9,8 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @Author wenzhd
@@ -20,8 +22,8 @@ import java.util.stream.Collectors;
 public class StreamTest {
 
     private List<Article> articles = Lists.newArrayList(
-            new Article("C++", "author1", Lists.newArrayList("aaa", "bb", "bb","ccc")),
-            new Article("Matlab", "author2", Lists.newArrayList("ccc","d")),
+            new Article("C++", "author1", Lists.newArrayList("aaa", "bb", "bb", "ccc")),
+            new Article("Matlab", "author2", Lists.newArrayList("ccc", "d")),
             new Article("Matlab", "author11", Lists.newArrayList("aaa")),
             new Article("C#", "author3", Lists.newArrayList("bbb")),
             new Article("Java", "author4", Lists.newArrayList("c")),
@@ -31,6 +33,7 @@ public class StreamTest {
 
     /**
      * 过滤
+     *
      * @return
      */
     public Optional<Article> getFirstJavaArticle() {
@@ -41,6 +44,7 @@ public class StreamTest {
 
     /**
      * 查找第一个
+     *
      * @param s
      * @return
      */
@@ -81,7 +85,7 @@ public class StreamTest {
     @Test
     public void testGroupingByStream() {
         Map<String, List<Article>> groupArticleMap = articles.stream()
-        .collect(Collectors.groupingBy(Article::getTitle));
+                .collect(Collectors.groupingBy(Article::getTitle));
 
         Assert.assertEquals(2, groupArticleMap.get("Java").size());
         Assert.assertEquals("Java", groupArticleMap.get("Java").get(0).getTitle());
@@ -193,7 +197,7 @@ public class StreamTest {
      * 执行结果为Boolean类型
      */
     @Test
-    public void testAnyMatch () {
+    public void testAnyMatch() {
         Boolean result1 = articles.stream()
                 .anyMatch(Article::isJava);
 
@@ -252,11 +256,49 @@ public class StreamTest {
 
     @Test
     public void testReduceForAdd() {
-        int sumAge = persons.stream().reduce(
-                0,
-                (p1, p2) -> p1.getAge()+p2.getAge());
+        int sumAge = persons.stream()
+                .map(Person::getAge)
+                .reduce(
+                        0, // 第一个参数：标识初始值，这里为0
+                        (p1, p2) -> p1 + p2 // 第二个参数为需要进行的规约操作，接收拥有两个参数的Lambda表达式，reduce把流中元素两两输给Lambda表达式。
+                );
+
+        Assert.assertEquals(140, sumAge);
     }
 
+    /**
+     * --------------------good example------------------------------
+     */
+    @Test
+    public void testReduceForAdd2() {
+        int sumAge = persons.stream()
+                .map(Person::getAge)
+                .reduce(
+                        0, // 第一个参数：标识初始值，这里为0
+                        Integer::sum // 第二个参数为需要进行的规约操作，使用Integer提供的sum函数代替自定义的Lambda表达式
+                        // Integer 还提供了min，max等一系列数值操作。
+                );
+
+        Assert.assertEquals(140, sumAge);
+    }
+
+    @Test
+    public  void testToValueable() {
+        IntStream stream = persons.stream()
+                .mapToInt(Person::getAge);
+
+        Assert.assertNotNull(stream);
+    }
+
+    @Test
+    public  void testToValueableAndCalculate() {
+        OptionalInt maxAge = persons.stream() // 注意返回的是OprionlInt;类似还有OprionalDouble、OptionalLong
+                .mapToInt(Person::getAge)
+                .max();
+
+        Assert.assertNotNull(maxAge);
+        System.out.print(maxAge);
+    }
 
 
 }
